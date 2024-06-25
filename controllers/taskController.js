@@ -1,69 +1,98 @@
 const Task = require("../models/task");
+const Project = require("../models/project");
 
 exports.getAllTasks = async (req, res) => {
+	const { projectId } = req.params;
+
 	try {
-		const tasks = await Task.find();
+		const project = await Project.findById(projectId);
+		if (!project) return res.status(404).json({ message: "Project not found" });
+
+		const tasks = await Task.find({ project: projectId });
 		res.status(200).json(tasks);
 	} catch (error) {
-		res.status(500).json({ message: "Error fetching tasks", error });
+		res.status(500).json({ message: "Server error" });
 	}
 };
 
 exports.addTask = async (req, res) => {
-	try {
-		const task = new Task({
-			title: req.body.title,
-			description: req.body.description,
-			users: req.body.users || [],
-			image: req.body.image || "",
-			content: req.body.content,
-			status: req.body.status || "pending",
-			tags: req.body.tags || [],
-		});
-		const savedTask = await task.save();
-		res.status(201).json(savedTask);
-	} catch (error) {
-		res.status(500).json({ message: "Error adding task", error });
-	}
-};
+	const { projectId } = req.params;
+	const { title, description, assignee } = req.body;
 
-exports.getOneTask = async (req, res) => {
 	try {
-		const task = await Task.findById(req.params.id);
-		if (!task) return res.status(404).json({ message: "Task not found" });
-		res.status(200).json(task);
+		const project = await Project.findById(projectId);
+		if (!project) return res.status(404).json({ message: "Project not found" });
+
+		if (!project.users.includes(req.user._id)) {
+			return res.status(403).json({ message: "Not authorized" });
+		}
+
+		const task = new Task({
+			title,
+			description,
+			project: projectId,
+			assignee,
+		});
+
+		await task.save();
+		project.tasks.push(task._id);
+		await project.save();
+
+		res.status(201).json(task);
 	} catch (error) {
-		res.status(500).json({ message: "Error fetching task", error });
+		res.status(500).json({ message: "Server error" });
 	}
 };
 
 exports.updateTask = async (req, res) => {
+	const { taskId } = req.params;
+	const { title, description, assignee, status, tags } = req.body;
+
 	try {
-		const task = await Task.findById(req.params.id);
+		const task = await Task.findById(taskId);
 		if (!task) return res.status(404).json({ message: "Task not found" });
 
-		task.title = req.body.title || task.title;
-		task.description = req.body.description || task.description;
-		task.users = req.body.users || task.users;
-		task.image = req.body.image || task.image;
-		task.content = req.body.content || task.content;
-		task.status = req.body.status || task.status;
-		task.tags = req.body.tags || task.tags;
+		const project = await Project.findById(task.project);
+		if (!project) return res.status(404).json({ message: "Project not found" });
+
+		if (project.admin.toString() !== req.user._id.toString()) {
+			return res.status(403).json({ message: "Not authorized" });
+		}
+
+		task.title = title || task.title;
+		task.description = description || task.description;
+		task.assignee = assignee || task.assignee;
+		task.status = status || task.status;
+		task.tags = tags || task.tags;
 		task.updatedAt = new Date();
 
-		const updatedTask = await task.save();
-		res.status(200).json(updatedTask);
+		await task.save();
+		res.status(200).json(task);
 	} catch (error) {
-		res.status(500).json({ message: "Error updating task", error });
+		res.status(500).json({ message: "Server error" });
 	}
 };
 
 exports.deleteTask = async (req, res) => {
+	const { taskId } = req.params;
+
 	try {
-		const task = await Task.findByIdAndDelete(req.params.id);
+		const task = await Task.findById(taskId);
 		if (!task) return res.status(404).json({ message: "Task not found" });
+
+		const project = await Project.findById(task.project);
+		if (!project) return res.status(404).json({ message: "Project not found" });
+
+		if (project.admin.toString() !== req.user._id.toString()) {
+			return res.status(403).json({ message: "Not authorized" });
+		}
+
+		await task.remove();
+		project.tasks.pull(task._id);
+		await project.save();
+
 		res.status(200).json({ message: "Task deleted" });
 	} catch (error) {
-		res.status(500).json({ message: "Error deleting task", error });
+		res.status(500).json({ message: "Server error" });
 	}
 };
