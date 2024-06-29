@@ -105,3 +105,26 @@ exports.addUserToProject = async (req, res) => {
 		res.status(500).json({ message: "Server error", error: error.message });
 	}
 };
+
+// Remove user from project
+exports.removeUserFromProject = async (req, res) => {
+	const { userId } = req.body;
+	const { projectId } = req.params;
+
+	try {
+		const project = await Project.findById(projectId);
+		if (!project) return res.status(404).json({ message: "Project not found" });
+
+		if (project.admin.toString() !== req.user._id.toString()) {
+			return res.status(403).json({ message: "Not authorized" });
+		}
+
+		project.users = project.users.filter((user) => user.toString() !== userId);
+		await project.save();
+
+		res.status(200).json({ message: "User removed from project", project });
+	} catch (error) {
+		console.error(error); // Log the actual error
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
+};

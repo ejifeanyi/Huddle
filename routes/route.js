@@ -37,6 +37,26 @@ router.post(
 	admin,
 	userController.addUserToProject
 );
+router.delete(
+	"/api/projects/:projectId/users",
+	protect,
+	admin,
+	userController.removeUserFromProject
+);
+
+// Chat routes
+router.get(
+	"/api/projects/:projectId/chats",
+	protect,
+	admin,
+	chatController.getProjectChats
+);
+router.post(
+	"/api/projects/:projectId/chats",
+	protect,
+	admin,
+	chatController.sendChat
+);
 
 // Task routes
 router.get(
