@@ -4,6 +4,7 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const projectController = require("../controllers/projectController");
 const taskController = require("../controllers/taskController");
+const chatController = require("../controllers/chatController");
 const { protect, admin } = require("../middleware/auth");
 
 // Health check endpoint
