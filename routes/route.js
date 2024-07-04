@@ -69,4 +69,20 @@ router.post("/api/projects/:projectId/tasks", protect, taskController.addTask);
 router.put("/api/tasks/:taskId", protect, admin, taskController.updateTask);
 router.delete("/api/tasks/:taskId", protect, admin, taskController.deleteTask);
 
+// to update column of task
+router.put(
+	"/api/tasks/:taskId/column",
+	protect,
+	admin,
+	taskController.updateTaskColumn
+);
+
+// to assign user to a task from the project
+router.put(
+	"/api/tasks/:taskId/assign",
+	protect,
+	admin,
+	taskController.assignTask
+);
+
 module.exports = router;

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const taskSchema = mongoose.Schema(
+const taskSchema = new mongoose.Schema(
 	{
 		title: {
 			type: String,
@@ -15,29 +15,19 @@ const taskSchema = mongoose.Schema(
 			ref: "Project",
 			required: true,
 		},
+		column: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Column",
+		},
 		assignee: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 		},
-		status: {
+		priority: {
 			type: String,
-			enum: [
-				"pending",
-				"brainstorm",
-				"in-design",
-				"in-development",
-				"in-testing",
-				"in-review",
-				"in-shipping",
-				"completed",
-			],
-			default: "pending",
+			enum: ["low", "medium", "high"],
+			default: "medium",
 		},
-		tags: [
-			{
-				type: String,
-			},
-		],
 	},
 	{
 		timestamps: true,

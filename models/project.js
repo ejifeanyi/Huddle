@@ -1,20 +1,28 @@
 const mongoose = require("mongoose");
 
-const projectSchema = mongoose.Schema(
+const projectSchema = new mongoose.Schema(
 	{
 		name: {
 			type: String,
 			required: true,
 		},
+		description: String,
 		admin: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 			required: true,
 		},
-		users: [
+		assignees: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "User",
+			},
+		],
+		chats: [
+			{
+				user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+				message: String,
+				timestamp: { type: Date, default: Date.now },
 			},
 		],
 		tasks: [

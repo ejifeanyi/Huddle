@@ -6,9 +6,21 @@ const chatSchema = new mongoose.Schema({
 		ref: "Project",
 		required: true,
 	},
-	sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-	content: { type: String, required: true },
-	createdAt: { type: Date, default: Date.now },
+	sender: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User",
+		required: true,
+	},
+	content: {
+		type: String,
+		required: true,
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now,
+	},
 });
 
-module.exports = mongoose.model("Chat", chatSchema);
+const Chat = mongoose.model("Chat", chatSchema);
+
+module.exports = Chat;
