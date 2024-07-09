@@ -1,5 +1,3 @@
-// routes file (e.g., index.js or api.js)
-
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
@@ -8,6 +6,7 @@ const projectController = require("../controllers/projectController");
 const taskController = require("../controllers/taskController");
 const chatController = require("../controllers/chatController");
 const { protect, admin } = require("../middleware/auth");
+const { check } = require("express-validator");
 
 // Health check endpoint
 router.get("/", (req, res) => {
