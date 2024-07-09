@@ -1,6 +1,8 @@
+// routes file (e.g., index.js or api.js)
+
 const express = require("express");
-const { check } = require("express-validator");
 const router = express.Router();
+const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
 const projectController = require("../controllers/projectController");
 const taskController = require("../controllers/taskController");
@@ -11,6 +13,9 @@ const { protect, admin } = require("../middleware/auth");
 router.get("/", (req, res) => {
 	res.send("Server is up and running.");
 });
+
+// Auth routes
+router.post("/api/auth", authController.verifyToken);
 
 // User routes
 router.post(
