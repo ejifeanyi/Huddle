@@ -78,15 +78,17 @@ exports.authUser = async (req, res) => {
 	}
 };
 
-exports.getUserById = async (req, res) => {
+exports.getUserByToken = async (req, res) => {
 	try {
-		const user = await User.findById(req.params.userId);
+		// `req.user` should contain the authenticated user data if `protect` middleware is correctly implemented
+		const user = await User.findById(req.user._id).select("-password");
 		if (!user) {
 			return res.status(404).json({ message: "User not found" });
 		}
 		res.json(user);
 	} catch (error) {
-		res.status(500).json({ message: "Server error" });
+		console.error(error); // Log the actual error
+		res.status(500).json({ message: "Server error", error: error.message });
 	}
 };
 
