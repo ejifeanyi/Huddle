@@ -29,6 +29,8 @@ router.post(
 	userController.registerUser
 );
 router.post("/api/users/login", userController.authUser);
+router.get("/api/users/:userId", protect, userController.getUserById);
+
 router.get("/api/users/profile", protect, (req, res) => {
 	res.json(req.user);
 });
