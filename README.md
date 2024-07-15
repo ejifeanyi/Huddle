@@ -1,4 +1,4 @@
-# Real-time Project Manager Platform
+# Huddle - A Real-time Project Manager Platform
 
 This is a real-time project manager platform built with Node.js, Express, and Socket.io. The backend is deployed on Render and uses MongoDB for the database. This documentation will guide you through the setup, structure, and usage of the project.
 
